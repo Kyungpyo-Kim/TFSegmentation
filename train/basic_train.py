@@ -34,11 +34,11 @@ class BasicTrain(object):
         # exit(0)
 
         # Create a saver object
-        self.saver = tf.train.Saver(max_to_keep=self.args.max_to_keep,
+        self.saver = tf.compat.v1.train.Saver(max_to_keep=self.args.max_to_keep,
                                     #keep_checkpoint_every_n_hours=10,
                                     save_relative_paths=True)
 
-        self.saver_best = tf.train.Saver(max_to_keep=1,
+        self.saver_best = tf.compat.v1.train.Saver(max_to_keep=1,
                                          save_relative_paths=True)
 
         # Load from latest checkpoint if found

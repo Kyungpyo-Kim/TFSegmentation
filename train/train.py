@@ -25,7 +25,8 @@ import matplotlib.pyplot as plt
 
 from utils.img_utils import decode_labels
 from utils.seg_dataloader import SegDataLoader
-from tensorflow.contrib.data import Iterator
+# from tensorflow.contrib.data import Iterator
+from tensorflow.data import Iterator
 import os
 import pdb
 import torchfile
@@ -64,7 +65,7 @@ class Train(BasicTrain):
         # init summaries and it's operators
         self.init_summaries()
         # Create summary writer
-        self.summary_writer = tf.summary.FileWriter(self.args.summary_dir, self.sess.graph)
+        self.summary_writer = tf.compat.v1.summary.FileWriter(self.args.summary_dir, self.sess.graph)
         ##################################################################################
         # Init load data and generator
         self.generator = None
@@ -267,7 +268,7 @@ class Train(BasicTrain):
             for tag, shape in self.images_summary_tags:
                 self.summary_tags += tag
                 self.summary_placeholders[tag] = tf.placeholder('float32', shape, name=tag)
-                self.summary_ops[tag] = tf.summary.image(tag, self.summary_placeholders[tag], max_outputs=10)
+                self.summary_ops[tag] = tf.compat.v1.summary.image(tag, self.summary_placeholders[tag], max_outputs=10)
 
     def add_summary(self, step, summaries_dict=None, summaries_merged=None):
         """
@@ -388,9 +389,12 @@ class Train(BasicTrain):
     @timeit
     def load_test_data(self):
         print("Loading Testing data..")
-        self.test_data = {'X': np.load(self.args.data_dir + "X_test.npy")}
-        self.names_mapper = {'X': np.load(self.args.data_dir + "xnames_test.npy"),
-                             'Y': np.load(self.args.data_dir + "ynames_test.npy")}
+        # self.test_data = {'X': np.load(self.args.data_dir + "X_test.npy")}
+        self.test_data = {'X': np.load(self.args.data_dir + "X_train.npy")}
+        # self.names_mapper = {'X': np.load(self.args.data_dir + "xnames_test.npy"),
+        #                      'Y': np.load(self.args.data_dir + "ynames_test.npy")}
+        self.names_mapper = {'X': np.load(self.args.data_dir + "names_train.npy"),
+                             'Y': np.load(self.args.data_dir + "ynames_train.npy")}
         self.test_data_len = self.test_data['X'].shape[0] - self.test_data['X'].shape[0] % self.args.batch_size
         print("Test-shape-x -- " + str(self.test_data['X'].shape))
         self.num_iterations_testing_per_epoch = (self.test_data_len + self.args.batch_size - 1) // self.args.batch_size
@@ -858,7 +862,7 @@ class Train(BasicTrain):
             plt.imsave(colored_save_path, segmented_imgs[0])
 
             # Results for official evaluation
-            save_path = self.args.out_dir + 'results/' + str(self.names_mapper['Y'][idx])
+            save_path = self.args.out_dir + 'results/'+ (self.names_mapper['Y'][idx]).decode()
             if not os.path.exists(os.path.dirname(save_path)):
                 os.makedirs(os.path.dirname(save_path))
             output = postprocess(out_argmax[0])
@@ -910,12 +914,12 @@ class Train(BasicTrain):
             # Feed this variables to the network
             if self.args.random_cropping:
                 feed_dict = {self.test_model.x_pl_before: x_batch,
-                             self.test_model.y_pl_before: y_batch
+                             self.test_model.y_pl_before: y_batch,
                              self.test_model.is_training: False,
                              }
             else:
                 feed_dict = {self.test_model.x_pl: x_batch,
-                             self.test_model.y_pl: y_batch
+                             self.test_model.y_pl: y_batch,
                              self.test_model.is_training: False
                              }
 

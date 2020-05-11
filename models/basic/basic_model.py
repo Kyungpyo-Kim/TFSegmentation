@@ -160,7 +160,7 @@ class BasicModel:
         with tf.name_scope('train-operation'):
             extra_update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
             with tf.control_dependencies(extra_update_ops):
-                self.optimizer = tf.train.AdamOptimizer(self.args.learning_rate)
+                self.optimizer = tf.compat.v1.train.AdamOptimizer(self.args.learning_rate)
                 self.train_op = self.optimizer.minimize(self.loss)
 
     def init_summaries(self):

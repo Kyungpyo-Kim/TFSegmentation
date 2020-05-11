@@ -32,11 +32,11 @@ class NewTrain(object):
         self.init_model()
 
         # Create a saver object
-        self.saver = tf.train.Saver(max_to_keep=self.args.max_to_keep,
+        self.saver = tf.compat.v1.train.Saver(max_to_keep=self.args.max_to_keep,
                                     keep_checkpoint_every_n_hours=10,
                                     save_relative_paths=True)
 
-        self.saver_best = tf.train.Saver(max_to_keep=1,
+        self.saver_best = tf.compat.v1.train.Saver(max_to_keep=1,
                                          save_relative_paths=True)
 
         # Load from latest checkpoint if found
@@ -59,7 +59,7 @@ class NewTrain(object):
         # init summaries and it's operators
         self.init_summaries()
         # Create summary writer
-        self.summary_writer = tf.summary.FileWriter(self.args.summary_dir, self.sess.graph)
+        self.summary_writer = tf.compat.v1.summary.FileWriter(self.args.summary_dir, self.sess.graph)
         ##################################################################################
         if self.args.mode == 'train':
             self.num_iterations_training_per_epoch = self.args.tfrecord_train_len // self.args.batch_size
@@ -143,7 +143,7 @@ class NewTrain(object):
             for tag, shape in self.images_summary_tags:
                 self.summary_tags += tag
                 self.summary_placeholders[tag] = tf.placeholder('float32', shape, name=tag)
-                self.summary_ops[tag] = tf.summary.image(tag, self.summary_placeholders[tag], max_outputs=10)
+                self.summary_ops[tag] = tf.compat.v1.summary.image(tag, self.summary_placeholders[tag], max_outputs=10)
 
     def add_summary(self, step, summaries_dict=None, summaries_merged=None):
         """

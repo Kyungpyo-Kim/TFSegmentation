@@ -122,6 +122,7 @@ out/
 # data
 data/dummy_cityscapes/
 data/full_cityscapes/
+data/full_cityscapes_res/
 
 # pretrained_weights
 pretrained_weights/*.npy
@@ -147,3 +148,5 @@ cityscapesScripts/cityscapesscripts/annotation/icons/
 cityscapesScripts/cityscapesscripts/viewer/icons/
 data/cityscapes_tfdata/images/
 data/cityscapes_tfdata/labels/
+
+.vscode/
